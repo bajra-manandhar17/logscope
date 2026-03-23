@@ -1,3 +1,5 @@
 .claude
 bin
 logscope
+frontend/dist
+frontend/node_modules
