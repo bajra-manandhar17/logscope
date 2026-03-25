@@ -86,3 +86,6 @@ export interface ApiError {
   error: string
   code: string
 }
+
+export type ReplayMode = 'idle' | 'playing' | 'paused'
+export type ReplaySpeed = 1 | 5 | 10 | 50

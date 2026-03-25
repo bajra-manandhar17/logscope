@@ -10,8 +10,12 @@ import {
   Legend,
   ResponsiveContainer,
   ReferenceDot,
+  ReferenceLine,
+  Cell,
 } from 'recharts'
 import { useAnalyzerStore } from '../../stores/analyzerStore'
+import { useReplayStore } from '../../stores/replayStore'
+import { bucketIndexAtTime } from '../../lib/binarySearch'
 import type { TimeBucket, Spike } from '../../types'
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card'
 
@@ -49,6 +53,8 @@ function getCSSVar(name: string): string {
 
 export function TimeSeriesChart() {
   const result = useAnalyzerStore((s) => s.result)
+  const replayMode = useReplayStore((s) => s.mode)
+  const currentTime = useReplayStore((s) => s.currentTime)
 
   if (!result) return null
 
@@ -73,6 +79,9 @@ export function TimeSeriesChart() {
     }
     return map
   }, [spikes])
+
+  const isReplaying = replayMode !== 'idle' && currentTime !== null
+  const cutoffIdx = isReplaying ? bucketIndexAtTime(time_series, currentTime!) : -1
 
   const chartColor = getCSSVar('--chart-1') || 'oklch(0.65 0.15 250)'
   const errorColor = getCSSVar('--chart-2') || 'oklch(0.65 0.22 25)'
@@ -130,7 +139,11 @@ export function TimeSeriesChart() {
               formatter={(v) => (v === 'total' ? 'Total logs' : 'Errors')}
               wrapperStyle={{ fontSize: 12 }}
             />
-            <Bar dataKey="total" fill="url(#barGradient)" radius={[2, 2, 0, 0]} name="total" />
+            <Bar dataKey="total" fill="url(#barGradient)" radius={[2, 2, 0, 0]} name="total">
+              {isReplaying && data.map((_, i) => (
+                <Cell key={i} fillOpacity={i > cutoffIdx ? 0.15 : 1} />
+              ))}
+            </Bar>
             <Line
               type="monotone"
               dataKey="errors"
@@ -139,6 +152,13 @@ export function TimeSeriesChart() {
               dot={false}
               name="errors"
             />
+            {isReplaying && (
+              <ReferenceLine
+                x={currentTime!}
+                stroke="oklch(0.65 0.2 150)"
+                strokeDasharray="4 4"
+              />
+            )}
             {data.map((row) => {
               const spike = spikeMap.get(row.ts)
               if (!spike) return null

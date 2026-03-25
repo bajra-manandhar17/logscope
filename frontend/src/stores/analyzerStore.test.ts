@@ -13,6 +13,13 @@ const mockResult: AnalysisResult = {
     time_range: ['2024-01-01T00:00:00Z', '2024-01-01T01:00:00Z'],
     top_sources: ['api'],
   },
+  intelligence: {
+    spikes: [],
+    silence_gaps: [],
+    causal_sequences: [],
+    avg_entropy: 0,
+    high_entropy_count: 0,
+  },
   entries: [],
   patterns: [],
   time_series: [],

@@ -1,7 +1,8 @@
-import { useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useVirtualizer } from '@tanstack/react-virtual'
 import { SearchX } from 'lucide-react'
 import { useAnalyzerStore } from '../../stores/analyzerStore'
+import { useReplayStore } from '../../stores/replayStore'
 import type { LogEntry } from '../../types'
 import { cn } from '@/lib/utils'
 import { Badge } from '@/components/ui/badge'
@@ -46,6 +47,8 @@ const ROW_HEIGHT = 32
 export function LogTable() {
   const result = useAnalyzerStore((s) => s.result)
   const filters = useAnalyzerStore((s) => s.filters)
+  const replayMode = useReplayStore((s) => s.mode)
+  const currentTime = useReplayStore((s) => s.currentTime)
 
   const [sortKey, setSortKey] = useState<SortKey>('line_number')
   const [sortDir, setSortDir] = useState<SortDir>('asc')
@@ -73,8 +76,13 @@ export function LogTable() {
       rows = rows.filter((e) => e.timestamp && new Date(e.timestamp).getTime() <= end)
     }
 
+    if (replayMode !== 'idle' && currentTime) {
+      const cutoff = new Date(currentTime).getTime()
+      rows = rows.filter((e) => !e.timestamp || new Date(e.timestamp).getTime() <= cutoff)
+    }
+
     return sortEntries(rows, sortKey, sortDir)
-  }, [result, filters, sortKey, sortDir])
+  }, [result, filters, sortKey, sortDir, replayMode, currentTime])
 
   const virtualizer = useVirtualizer({
     count: filtered.length,
@@ -82,6 +90,12 @@ export function LogTable() {
     estimateSize: () => ROW_HEIGHT,
     overscan: 10,
   })
+
+  useEffect(() => {
+    if (replayMode === 'playing' && filtered.length > 0) {
+      virtualizer.scrollToIndex(filtered.length - 1, { align: 'end' })
+    }
+  }, [replayMode, filtered.length])
 
   if (!result) return null
 
