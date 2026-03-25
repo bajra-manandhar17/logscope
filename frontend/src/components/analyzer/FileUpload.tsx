@@ -61,7 +61,7 @@ export function FileUpload() {
         onDragLeave={() => setDragOver(false)}
         onDrop={onDrop}
         className={cn(
-          'relative w-full rounded-xl border p-10 text-center cursor-pointer transition-all duration-150 select-none overflow-hidden',
+          'relative w-full rounded-md border p-6 text-center cursor-pointer transition-all duration-150 select-none overflow-hidden',
           dragOver
             ? 'border-primary bg-primary/8 ring-2 ring-primary/20'
             : 'border-border/50 bg-muted/20 hover:border-primary/40 hover:bg-primary/5',

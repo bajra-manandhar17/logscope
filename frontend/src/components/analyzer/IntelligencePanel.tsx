@@ -18,7 +18,7 @@ function CollapsibleSection({ title, count, children }: SectionProps) {
   if (count === 0) return null
 
   return (
-    <div className="border border-border/50 rounded-lg overflow-hidden">
+    <div className="border border-border/50 rounded-md overflow-hidden">
       <button
         onClick={() => setOpen((v) => !v)}
         className="w-full flex items-center justify-between px-4 py-2.5 text-sm font-medium hover:bg-muted/30 transition-colors"
@@ -49,7 +49,7 @@ export function IntelligencePanel() {
 
   if (!hasData) {
     return (
-      <div className="flex items-center justify-center h-24 rounded-xl border border-border text-sm text-muted-foreground">
+      <div className="flex items-center justify-center h-24 rounded-md border border-border text-sm text-muted-foreground">
         No intelligence insights detected — timestamps may be missing or log volume too uniform
       </div>
     )
@@ -62,7 +62,7 @@ export function IntelligencePanel() {
       </CardHeader>
       <CardContent className="flex flex-col gap-3">
         {/* Summary stats */}
-        <div className="flex flex-wrap gap-4 text-xs text-muted-foreground pb-2">
+        <div className="flex flex-wrap gap-4 text-xs text-muted-foreground pb-2 font-mono">
           {spikeCount > 0 && <span>{spikeCount} spike{spikeCount !== 1 ? 's' : ''}</span>}
           {silenceCount > 0 && <span>{silenceCount} silence gap{silenceCount !== 1 ? 's' : ''}</span>}
           {causalCount > 0 && <span>{causalCount} causal sequence{causalCount !== 1 ? 's' : ''}</span>}

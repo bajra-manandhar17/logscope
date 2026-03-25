@@ -92,7 +92,7 @@ export function ConfigForm() {
           max={1_000_000}
           value={config.total_lines}
           onChange={(e) => setConfig({ total_lines: Math.max(1, parseInt(e.target.value, 10) || 1) })}
-          className="w-48"
+          className="w-48 font-mono"
         />
       </div>
 
@@ -119,7 +119,7 @@ export function ConfigForm() {
                   step={0.01}
                   value={config.levels[level] ?? 0}
                   onChange={(e) => setLevel(level, parseFloat(e.target.value) || 0)}
-                  className="w-24 tabular-nums"
+                  className="w-24 tabular-nums font-mono"
                 />
               </div>
             )

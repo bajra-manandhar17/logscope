@@ -28,7 +28,7 @@ export function FilterBar() {
   const hasFilters = filters.search || filters.levels.length > 0 || filters.timeStart || filters.timeEnd
 
   return (
-    <div className="flex flex-wrap items-center gap-3 rounded-lg border border-border bg-card/50 backdrop-blur-sm px-3 py-2 text-sm">
+    <div className="flex flex-wrap items-center gap-3 rounded-md border border-border bg-card px-3 py-2 text-sm">
       {/* Search */}
       <div className="relative">
         <Search className="absolute left-2 top-1/2 -translate-y-1/2 size-3.5 text-muted-foreground" />
@@ -65,14 +65,14 @@ export function FilterBar() {
           type="datetime-local"
           value={filters.timeStart}
           onChange={(e) => setFilters({ timeStart: e.target.value })}
-          className="h-7 text-xs w-auto"
+          className="h-7 text-xs w-auto font-mono"
         />
         <span>To</span>
         <Input
           type="datetime-local"
           value={filters.timeEnd}
           onChange={(e) => setFilters({ timeEnd: e.target.value })}
-          className="h-7 text-xs w-auto"
+          className="h-7 text-xs w-auto font-mono"
         />
       </div>
 

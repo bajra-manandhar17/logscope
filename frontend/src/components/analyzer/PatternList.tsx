@@ -88,7 +88,7 @@ export function PatternList() {
 
   if (!patterns?.length) {
     return (
-      <div className="flex items-center justify-center h-24 rounded-xl border border-border text-sm text-muted-foreground">
+      <div className="flex items-center justify-center h-24 rounded-md border border-border text-sm text-muted-foreground">
         No patterns detected
       </div>
     )

@@ -62,7 +62,7 @@ export function TimeSeriesChart() {
 
   if (!time_series?.length) {
     return (
-      <div className="flex items-center justify-center h-40 rounded-xl border border-border text-sm text-muted-foreground">
+      <div className="flex items-center justify-center h-40 rounded-md border border-border text-sm text-muted-foreground">
         No time-series data available
       </div>
     )
@@ -101,22 +101,16 @@ export function TimeSeriesChart() {
       <CardContent>
         <ResponsiveContainer width="100%" height={240}>
           <ComposedChart data={data} margin={{ top: 4, right: 16, left: 0, bottom: 4 }}>
-            <defs>
-              <linearGradient id="barGradient" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor={chartColor} stopOpacity={0.6} />
-                <stop offset="100%" stopColor={chartColor} stopOpacity={0.15} />
-              </linearGradient>
-            </defs>
-            <CartesianGrid strokeDasharray="3 3" stroke={gridColor} />
+            <CartesianGrid strokeDasharray="2 4" stroke={gridColor} />
             <XAxis
               dataKey="ts"
               tickFormatter={(v) => formatTick(v, bucket_interval)}
-              tick={{ fontSize: 11, fill: textColor }}
+              tick={{ fontSize: 11, fill: textColor, fontFamily: 'var(--font-mono)' }}
               tickLine={false}
               axisLine={false}
             />
             <YAxis
-              tick={{ fontSize: 11, fill: textColor }}
+              tick={{ fontSize: 11, fill: textColor, fontFamily: 'var(--font-mono)' }}
               tickLine={false}
               axisLine={false}
               width={40}
@@ -131,15 +125,16 @@ export function TimeSeriesChart() {
                 fontSize: 12,
                 backgroundColor: popoverBg,
                 border: `1px solid ${gridColor}`,
-                borderRadius: '8px',
+                borderRadius: '4px',
                 color: popoverFg,
+                fontFamily: 'var(--font-mono)',
               }}
             />
             <Legend
               formatter={(v) => (v === 'total' ? 'Total logs' : 'Errors')}
               wrapperStyle={{ fontSize: 12 }}
             />
-            <Bar dataKey="total" fill="url(#barGradient)" radius={[2, 2, 0, 0]} name="total">
+            <Bar dataKey="total" fill={chartColor} radius={[2, 2, 0, 0]} name="total">
               {isReplaying && data.map((_, i) => (
                 <Cell key={i} fillOpacity={i > cutoffIdx ? 0.15 : 1} />
               ))}

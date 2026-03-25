@@ -23,9 +23,9 @@ export function SpikeList({ spikes }: { spikes: Spike[] }) {
         <tbody>
           {spikes.map((s, i) => (
             <tr key={i} className="border-b border-border/50 last:border-0">
-              <td className="py-2 px-3 tabular-nums text-muted-foreground">{formatTs(s.bucket_timestamp)}</td>
-              <td className="py-2 px-3 text-right tabular-nums font-medium">{s.count.toLocaleString()}</td>
-              <td className="py-2 px-3 text-right tabular-nums text-muted-foreground">{Math.round(s.threshold).toLocaleString()}</td>
+              <td className="py-2 px-3 tabular-nums font-mono text-muted-foreground">{formatTs(s.bucket_timestamp)}</td>
+              <td className="py-2 px-3 text-right tabular-nums font-mono font-medium">{s.count.toLocaleString()}</td>
+              <td className="py-2 px-3 text-right tabular-nums font-mono text-muted-foreground">{Math.round(s.threshold).toLocaleString()}</td>
               <td className="py-2 px-3">
                 <Badge variant={s.severity === 'high' ? 'destructive' : 'outline'} className="text-[10px] uppercase">
                   {s.severity}

@@ -118,7 +118,7 @@ export function LogTable() {
     : 'grid-cols-[4rem_9rem_5rem_9rem_1fr]'
 
   return (
-    <div className="rounded-xl border border-border overflow-hidden flex flex-col bg-card">
+    <div className="rounded-md border border-border overflow-hidden flex flex-col bg-card">
       {/* Header */}
       <div className={`grid ${gridCols} gap-x-3 bg-muted/40 px-3 py-2 text-xs font-medium uppercase tracking-wider text-muted-foreground select-none`}>
         <button className="text-left flex items-center gap-1" onClick={() => handleSort('line_number')}>
@@ -140,7 +140,7 @@ export function LogTable() {
       </div>
 
       {/* Body */}
-      <div ref={parentRef} className="overflow-auto" style={{ height: '480px' }}>
+      <div ref={parentRef} className="overflow-auto h-[60vh] min-h-96">
         {filtered.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full gap-2 text-muted-foreground">
             <SearchX className="size-8 opacity-40" />
@@ -161,8 +161,8 @@ export function LogTable() {
                     'hover:bg-muted/40',
                   )}
                 >
-                  <span className="tabular-nums text-muted-foreground">{entry.line_number}</span>
-                  <span className="tabular-nums text-muted-foreground truncate">{formatTs(entry.timestamp)}</span>
+                  <span className="tabular-nums font-mono text-muted-foreground">{entry.line_number}</span>
+                  <span className="tabular-nums font-mono text-muted-foreground truncate">{formatTs(entry.timestamp)}</span>
                   <Badge variant={cfg?.variant ?? 'secondary'} className={cn('text-[10px] uppercase', cfg?.className)}>
                     {entry.level}
                   </Badge>
@@ -172,7 +172,7 @@ export function LogTable() {
                       {entry.entropy?.toFixed(1) ?? '—'}
                     </span>
                   )}
-                  <span className="truncate">{entry.message || entry.raw}</span>
+                  <span className="truncate font-mono">{entry.message || entry.raw}</span>
                 </div>
               )
             })}

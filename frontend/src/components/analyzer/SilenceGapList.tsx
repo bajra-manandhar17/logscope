@@ -27,10 +27,10 @@ export function SilenceGapList({ gaps }: { gaps: SilenceGap[] }) {
               <td className="py-2 px-3">
                 <Badge variant="outline" className="text-[10px] font-mono">{g.source}</Badge>
               </td>
-              <td className="py-2 px-3 tabular-nums text-muted-foreground">{formatTs(g.gap_start)}</td>
-              <td className="py-2 px-3 tabular-nums text-muted-foreground">{formatTs(g.gap_end)}</td>
-              <td className="py-2 px-3 text-right font-medium">{g.duration}</td>
-              <td className="py-2 px-3 text-right tabular-nums text-muted-foreground">{g.active_sources_during_gap}</td>
+              <td className="py-2 px-3 tabular-nums font-mono text-muted-foreground">{formatTs(g.gap_start)}</td>
+              <td className="py-2 px-3 tabular-nums font-mono text-muted-foreground">{formatTs(g.gap_end)}</td>
+              <td className="py-2 px-3 text-right font-mono font-medium">{g.duration}</td>
+              <td className="py-2 px-3 text-right tabular-nums font-mono text-muted-foreground">{g.active_sources_during_gap}</td>
             </tr>
           ))}
         </tbody>

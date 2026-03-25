@@ -66,16 +66,16 @@ export function SummaryCards() {
   const displayTotal = liveCounts ? liveCounts.total : summary.total_lines
 
   return (
-    <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+    <div className="grid grid-cols-2 lg:grid-cols-4 gap-2">
       {/* Total lines */}
-      <Card className="transition-colors hover:border-primary/20">
+      <Card className="transition-colors">
         <CardHeader>
           <CardTitle className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
             Total Lines
           </CardTitle>
         </CardHeader>
         <CardContent className="flex flex-col gap-1">
-          <span className="text-3xl font-semibold tabular-nums tracking-tight">
+          <span className="text-2xl font-mono font-semibold tabular-nums tracking-tight">
             {displayTotal.toLocaleString()}
           </span>
           <span className="text-xs text-muted-foreground">{result.format_detected} format</span>
@@ -83,7 +83,7 @@ export function SummaryCards() {
       </Card>
 
       {/* Level breakdown */}
-      <Card className="transition-colors hover:border-primary/20">
+      <Card className="transition-colors">
         <CardHeader>
           <CardTitle className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
             Level Breakdown
@@ -110,7 +110,7 @@ export function SummaryCards() {
       </Card>
 
       {/* Time range */}
-      <Card className="transition-colors hover:border-primary/20">
+      <Card className="transition-colors">
         <CardHeader>
           <CardTitle className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
             Time Range
@@ -135,7 +135,7 @@ export function SummaryCards() {
       </Card>
 
       {/* Top sources */}
-      <Card className="transition-colors hover:border-primary/20">
+      <Card className="transition-colors">
         <CardHeader>
           <CardTitle className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
             Top Sources
