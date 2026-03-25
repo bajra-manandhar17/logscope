@@ -32,7 +32,7 @@ func Analyze(ctx context.Context, r io.Reader, formatHint string) (*AnalysisResu
 	for e := range entries {
 		summary.Add(e)
 		if e.Message != "" {
-			patterns.Add(e.Message)
+			patterns.Add(e)
 		}
 		if len(capped) < MaxEntries {
 			capped = append(capped, e)
@@ -45,13 +45,33 @@ func Analyze(ctx context.Context, r io.Reader, formatHint string) (*AnalysisResu
 
 	// 3. Compute time-series from capped entries (good enough per design doc).
 	timeSeries, bucketInterval := BucketTimeSeries(capped)
+	summaryResult := summary.Result()
+
+	// 4. Intelligence post-processing.
+	avgEntropy, highEntropyCount := EnrichEntropy(capped)
+	spikes := DetectSpikes(timeSeries)
+
+	// Silence detection needs bucket duration.
+	_, bucketSize := selectInterval(summaryResult.TimeRange[0], summaryResult.TimeRange[1])
+	silenceGaps := DetectSilenceGaps(capped, timeSeries, summaryResult.TopSources, bucketSize)
+
+	// Causal sequence detection.
+	patternResult := patterns.Result(MaxPatterns)
+	causalSeqs := DetectCausalSequences(capped, patternResult)
 
 	return &AnalysisResult{
 		FormatDetected: format,
-		Summary:        summary.Result(),
+		Summary:        summaryResult,
 		Entries:        capped,
-		Patterns:       patterns.Result(MaxPatterns),
+		Patterns:       patternResult,
 		TimeSeries:     timeSeries,
 		BucketInterval: bucketInterval,
+		Intelligence: Intelligence{
+			Spikes:           spikes,
+			SilenceGaps:      silenceGaps,
+			CausalSequences:  causalSeqs,
+			AvgEntropy:       avgEntropy,
+			HighEntropyCount: highEntropyCount,
+		},
 	}, nil
 }

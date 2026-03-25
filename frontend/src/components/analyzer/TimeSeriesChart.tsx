@@ -1,3 +1,4 @@
+import { useMemo } from 'react'
 import {
   ComposedChart,
   Bar,
@@ -8,9 +9,10 @@ import {
   Tooltip,
   Legend,
   ResponsiveContainer,
+  ReferenceDot,
 } from 'recharts'
 import { useAnalyzerStore } from '../../stores/analyzerStore'
-import type { TimeBucket } from '../../types'
+import type { TimeBucket, Spike } from '../../types'
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card'
 
 function formatTick(iso: string, interval: string): string {
@@ -61,6 +63,16 @@ export function TimeSeriesChart() {
   }
 
   const data = toChartData(time_series)
+  const spikes = result.intelligence?.spikes ?? []
+
+  // Build a set of spike timestamps for quick lookup.
+  const spikeMap = useMemo(() => {
+    const map = new Map<string, Spike>()
+    for (const s of spikes) {
+      map.set(s.bucket_timestamp, s)
+    }
+    return map
+  }, [spikes])
 
   const chartColor = getCSSVar('--chart-1') || 'oklch(0.65 0.15 250)'
   const errorColor = getCSSVar('--chart-2') || 'oklch(0.65 0.22 25)'
@@ -127,6 +139,20 @@ export function TimeSeriesChart() {
               dot={false}
               name="errors"
             />
+            {data.map((row) => {
+              const spike = spikeMap.get(row.ts)
+              if (!spike) return null
+              return (
+                <ReferenceDot
+                  key={`spike-${row.ts}`}
+                  x={row.ts}
+                  y={row.total}
+                  r={spike.severity === 'high' ? 6 : 4}
+                  fill={spike.severity === 'high' ? 'oklch(0.65 0.25 25)' : 'oklch(0.75 0.18 60)'}
+                  stroke="none"
+                />
+              )
+            })}
           </ComposedChart>
         </ResponsiveContainer>
       </CardContent>

@@ -3,6 +3,7 @@ package analyzer
 import (
 	"regexp"
 	"sort"
+	"time"
 )
 
 // Masking regexes applied in order — UUID and IP before NUM to avoid partial matches.
@@ -23,8 +24,10 @@ func maskTokens(s string) string {
 }
 
 type templateEntry struct {
-	sample string
-	count  int
+	sample    string
+	count     int
+	firstSeen time.Time
+	lastSeen  time.Time
 }
 
 // PatternAggregator groups log messages by masked template and counts occurrences.
@@ -36,17 +39,31 @@ func NewPatternAggregator() *PatternAggregator {
 	return &PatternAggregator{templates: make(map[string]*templateEntry)}
 }
 
-// Add masks the message and increments the matching template's count.
-func (a *PatternAggregator) Add(message string) {
-	tmpl := maskTokens(message)
+// Add masks the message and increments the matching template's count,
+// tracking first-seen and last-seen timestamps.
+func (a *PatternAggregator) Add(entry LogEntry) {
+	tmpl := maskTokens(entry.Message)
 	if e, ok := a.templates[tmpl]; ok {
 		e.count++
+		if !entry.Timestamp.IsZero() {
+			if e.firstSeen.IsZero() || entry.Timestamp.Before(e.firstSeen) {
+				e.firstSeen = entry.Timestamp
+			}
+			if entry.Timestamp.After(e.lastSeen) {
+				e.lastSeen = entry.Timestamp
+			}
+		}
 		return
 	}
 	if len(a.templates) >= MaxPatterns {
 		return // cap reached — drop new unique templates
 	}
-	a.templates[tmpl] = &templateEntry{sample: message, count: 1}
+	te := &templateEntry{sample: entry.Message, count: 1}
+	if !entry.Timestamp.IsZero() {
+		te.firstSeen = entry.Timestamp
+		te.lastSeen = entry.Timestamp
+	}
+	a.templates[tmpl] = te
 }
 
 // Result returns up to topN patterns sorted by count descending.
@@ -61,6 +78,8 @@ func (a *PatternAggregator) Result(topN int) []Pattern {
 			Template:   tmpl,
 			Count:      e.count,
 			SampleLine: e.sample,
+			FirstSeen:  e.firstSeen,
+			LastSeen:   e.lastSeen,
 		})
 	}
 	sort.Slice(patterns, func(i, j int) bool {

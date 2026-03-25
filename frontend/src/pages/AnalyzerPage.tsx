@@ -5,6 +5,7 @@ import { FilterBar } from '../components/analyzer/FilterBar'
 import { LogTable } from '../components/analyzer/LogTable'
 import { TimeSeriesChart } from '../components/analyzer/TimeSeriesChart'
 import { PatternList } from '../components/analyzer/PatternList'
+import { IntelligencePanel } from '../components/analyzer/IntelligencePanel'
 import { Separator } from '@/components/ui/separator'
 
 export function AnalyzerPage() {
@@ -58,6 +59,8 @@ export function AnalyzerPage() {
           <SummaryCards />
           <Separator />
           <TimeSeriesChart />
+          <Separator />
+          <IntelligencePanel />
           <Separator />
           <div className="flex flex-col gap-3">
             <div className="sticky top-14 z-[5] bg-background/95 backdrop-blur-sm py-2 -mx-6 px-6">

@@ -7,7 +7,7 @@ import { cn } from '@/lib/utils'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 
-type SortKey = 'line_number' | 'timestamp' | 'level'
+type SortKey = 'line_number' | 'timestamp' | 'level' | 'entropy'
 type SortDir = 'asc' | 'desc'
 
 const levelBadge: Record<string, { variant: 'destructive' | 'outline' | 'default' | 'secondary'; className?: string }> = {
@@ -32,6 +32,8 @@ function sortEntries(entries: LogEntry[], key: SortKey, dir: SortDir): LogEntry[
       cmp = (a.timestamp ?? '').localeCompare(b.timestamp ?? '')
     } else if (key === 'level') {
       cmp = (LEVEL_ORDER[a.level] ?? 99) - (LEVEL_ORDER[b.level] ?? 99)
+    } else if (key === 'entropy') {
+      cmp = (a.entropy ?? 0) - (b.entropy ?? 0)
     } else {
       cmp = a.line_number - b.line_number
     }
@@ -47,6 +49,7 @@ export function LogTable() {
 
   const [sortKey, setSortKey] = useState<SortKey>('line_number')
   const [sortDir, setSortDir] = useState<SortDir>('asc')
+  const [showEntropy, setShowEntropy] = useState(false)
 
   const parentRef = useRef<HTMLDivElement>(null)
 
@@ -96,10 +99,14 @@ export function LogTable() {
     return <span className="text-primary">{sortDir === 'asc' ? '↑' : '↓'}</span>
   }
 
+  const gridCols = showEntropy
+    ? 'grid-cols-[4rem_9rem_5rem_9rem_4rem_1fr]'
+    : 'grid-cols-[4rem_9rem_5rem_9rem_1fr]'
+
   return (
     <div className="rounded-xl border border-border overflow-hidden flex flex-col bg-card">
       {/* Header */}
-      <div className="grid grid-cols-[4rem_9rem_5rem_9rem_1fr] gap-x-3 bg-muted/40 px-3 py-2 text-xs font-medium uppercase tracking-wider text-muted-foreground select-none">
+      <div className={`grid ${gridCols} gap-x-3 bg-muted/40 px-3 py-2 text-xs font-medium uppercase tracking-wider text-muted-foreground select-none`}>
         <button className="text-left flex items-center gap-1" onClick={() => handleSort('line_number')}>
           # {sortIndicator('line_number')}
         </button>
@@ -110,6 +117,11 @@ export function LogTable() {
           Level {sortIndicator('level')}
         </button>
         <span>Source</span>
+        {showEntropy && (
+          <button className="text-left flex items-center gap-1" onClick={() => handleSort('entropy')}>
+            H {sortIndicator('entropy')}
+          </button>
+        )}
         <span>Message</span>
       </div>
 
@@ -130,7 +142,7 @@ export function LogTable() {
                   key={vItem.key}
                   style={{ position: 'absolute', top: vItem.start, width: '100%', height: ROW_HEIGHT }}
                   className={cn(
-                    'grid grid-cols-[4rem_9rem_5rem_9rem_1fr] gap-x-3 px-3 items-center text-xs border-b border-border/50 transition-colors duration-100',
+                    `grid ${gridCols} gap-x-3 px-3 items-center text-xs border-b border-border/50 transition-colors duration-100`,
                     vItem.index % 2 === 0 ? 'bg-transparent' : 'bg-muted/10',
                     'hover:bg-muted/40',
                   )}
@@ -141,6 +153,11 @@ export function LogTable() {
                     {entry.level}
                   </Badge>
                   <span className="truncate font-mono text-muted-foreground">{entry.source || '—'}</span>
+                  {showEntropy && (
+                    <span className={cn('tabular-nums text-muted-foreground', entry.entropy > 4.0 && 'text-yellow-500 font-medium')}>
+                      {entry.entropy?.toFixed(1) ?? '—'}
+                    </span>
+                  )}
                   <span className="truncate">{entry.message || entry.raw}</span>
                 </div>
               )
@@ -150,8 +167,14 @@ export function LogTable() {
       </div>
 
       <Separator />
-      <div className="px-3 py-1.5 text-xs text-muted-foreground bg-muted/30">
-        {filtered.length.toLocaleString()} of {result.entries.length.toLocaleString()} entries
+      <div className="px-3 py-1.5 text-xs text-muted-foreground bg-muted/30 flex items-center justify-between">
+        <span>{filtered.length.toLocaleString()} of {result.entries.length.toLocaleString()} entries</span>
+        <button
+          onClick={() => setShowEntropy((v) => !v)}
+          className={cn('text-[10px] px-2 py-0.5 rounded border transition-colors', showEntropy ? 'border-primary/50 text-primary' : 'border-border text-muted-foreground hover:text-foreground')}
+        >
+          {showEntropy ? 'Hide' : 'Show'} Entropy
+        </button>
       </div>
     </div>
   )

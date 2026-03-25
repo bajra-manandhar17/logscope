@@ -7,6 +7,7 @@ export interface LogEntry {
   source: string
   raw: string
   line_number: number
+  entropy: number
 }
 
 export interface Summary {
@@ -23,12 +24,44 @@ export interface Pattern {
   template: string
   count: number
   sample_line: string
+  first_seen: string
+  last_seen: string
 }
 
 export interface TimeBucket {
   timestamp: string
   count: number
   error_count: number
+}
+
+export interface Spike {
+  bucket_timestamp: string
+  count: number
+  threshold: number
+  severity: 'high' | 'medium'
+}
+
+export interface SilenceGap {
+  source: string
+  gap_start: string
+  gap_end: string
+  duration: string
+  active_sources_during_gap: number
+}
+
+export interface CausalSequence {
+  pattern_a: string
+  pattern_b: string
+  count: number
+  avg_lag_seconds: number
+}
+
+export interface Intelligence {
+  spikes: Spike[]
+  silence_gaps: SilenceGap[]
+  causal_sequences: CausalSequence[]
+  avg_entropy: number
+  high_entropy_count: number
 }
 
 export interface AnalysisResult {
@@ -38,6 +71,7 @@ export interface AnalysisResult {
   patterns: Pattern[]
   time_series: TimeBucket[]
   bucket_interval: string
+  intelligence: Intelligence
 }
 
 export interface GenerateConfig {

@@ -61,6 +61,15 @@ function PatternRow({ pattern, rank }: { pattern: Pattern; rank: number }) {
           </Button>
         </div>
       </div>
+      {/* First/Last seen timestamps */}
+      {pattern.first_seen && !pattern.first_seen.startsWith('0001') && (
+        <div className="mt-1 ml-[3.25rem] flex gap-4 text-[10px] text-muted-foreground">
+          <span>first seen: {new Date(pattern.first_seen).toLocaleString()}</span>
+          {pattern.last_seen && !pattern.last_seen.startsWith('0001') && (
+            <span>last seen: {new Date(pattern.last_seen).toLocaleString()}</span>
+          )}
+        </div>
+      )}
       {expanded && (
         <div className="mt-2 ml-[3.25rem] rounded-md border-l-2 border-primary/30 bg-muted/30 px-3 py-2 font-mono text-xs text-muted-foreground break-all">
           {pattern.sample_line}
